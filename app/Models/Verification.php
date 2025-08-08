@@ -10,6 +10,7 @@ class Verification extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'idno',
         'type',
         'nin',
@@ -28,6 +29,11 @@ class Verification extends Model
         'title',
         'state',
         'lga',
+        'town',
+        'residence_state',
+        'residence_lga',
+        'residence_town',
         'trackingId',
+        'signature',
     ];
 }

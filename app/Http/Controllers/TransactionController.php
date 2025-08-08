@@ -23,4 +23,32 @@ class TransactionController extends Controller
 
         return view('user.receipt', ['transaction' => $transaction]);
     }
+    public function recieptAdmin(Request $request)
+    {
+
+        $transaction = Transaction::where('referenceId', $request->referenceId)->first();
+
+        if (! $transaction) {
+            abort(404);
+        }
+
+        return view('user.receipt', ['transaction' => $transaction]);
+    }
+
+    public function transactions(Request $request)
+    {
+
+        $query = Transaction::query();
+
+        if ($search = $request->input('search')) {
+            $query->where('referenceId', 'like', "%{$search}%")
+                ->orWhere('service_type', 'like', "%{$search}%")
+                ->orWhere('service_description', 'like', "%{$search}%")
+                ->orWhere('status', 'like', "%{$search}%");
+        }
+
+        $transactions = $query->latest()->paginate(20);
+
+        return view('admin.transactions', compact('transactions'));
+    }
 }

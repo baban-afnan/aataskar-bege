@@ -24,14 +24,14 @@
 
         <!-- Dashboard Section -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.dashboard') }}">
+            <a class="nav-link {{ Route::is('user.dashboard') ? 'active' : '' }}" href="{{ route('user.dashboard') }}">
                 <i class="mdi mdi-view-dashboard menu-icon"></i>
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.wallet') }}">
+            <a class="nav-link {{ Route::is('user.wallet') ? 'active' : '' }}" href="{{ route('user.wallet') }}">
                 <i class="mdi mdi-wallet menu-icon"></i>
                 <span class="menu-title">Fund Wallet</span>
             </a>
@@ -39,52 +39,83 @@
 
         <!-- Verification Section -->
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.verify-nin') }}">
+            <a class="nav-link {{ Route::is('user.verify-nin') ? 'active' : '' }}"
+                href="{{ route('user.verify-nin') }}">
                 <i class="mdi mdi-fingerprint menu-icon"></i>
                 <span class="menu-title">Verify NIN</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.verify-nin-phone') }}">
-                <i class="mdi mdi-phone menu-icon"></i>
-                <span class="menu-title">Verify NIN PHONE</span>
+            <a class="nav-link {{ Route::is('user.verify-nin2') ? 'active' : '' }}"
+                href="{{ route('user.verify-nin2') }}">
+                <i class="mdi mdi-fingerprint menu-icon"></i>
+                <span class="menu-title">Verify NIN V2</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.ipe') }}">
+            <a class="nav-link  {{ Route::is('user.verify-nin-phone') ? 'active' : '' }}"
+                href="{{ route('user.verify-nin-phone') }}">
+                <i class="mdi mdi-phone menu-icon"></i>
+                <span class="menu-title">Verify NIN PHONE</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ Route::is('user.verify-demo') ? 'active' : '' }}"
+                href="{{ route('user.verify-demo') }}">
+                <i class="mdi mdi-account-group menu-icon"></i>
+                <span class="menu-title">NIN Demographic</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ Route::is('user.ipe') ? 'active' : '' }}" href="{{ route('user.ipe') }}">
                 <i class="mdi mdi-magnify menu-icon"></i>
                 <span class="menu-title">IPE</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.verify-bvn') }}">
+            <a class="nav-link {{ Route::is('user.verify-bvn') ? 'active' : '' }}"
+                href="{{ route('user.verify-bvn') }}">
                 <i class="mdi mdi-fingerprint menu-icon"></i>
                 <span class="menu-title">Verify BVN</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.personalize-nin') }}">
+            <a class="nav-link {{ Route::is('user.personalize-nin') ? 'active' : '' }}"
+                href="{{ route('user.personalize-nin') }}">
                 <i class="mdi mdi-magnify menu-icon"></i>
                 <span class="menu-title">Personalize</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ route('user.bvn-enrollment') }}">
+            <a class="nav-link {{ Route::is('user.bvn-enrollment') ? 'active' : '' }}"
+                href="{{ route('user.bvn-enrollment') }}">
                 <i class="mdi mdi-account-plus menu-icon"></i>
 
                 <span class="menu-title">BVN User</span>
             </a>
         </li>
-
+        <li class="nav-item">
+            <a class="nav-link {{ Route::is('user.verify-bvn2') ? 'active' : '' }}"
+                href="{{ route('user.verify-bvn2') }}">
+                <i class="mdi mdi-magnify menu-icon"></i>
+                <span class="menu-title">INST. BVN Search</span>
+            </a>
+        </li>
         <li class="nav-item">
             <a class="nav-link" href="{{ route('user.support') }}">
                 <i class="mdi mdi-lifebuoy menu-icon"></i>
                 <span class="menu-title">Support</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ Route::is('user.profile') ? 'active' : '' }}" href="{{ route('user.profile') }}">
+                <i class="mdi mdi-account-circle menu-icon"></i>
+                <span class="menu-title">Profile</span>
             </a>
         </li>
         <!-- Admin Section -->
@@ -97,8 +128,21 @@
                 </a>
                 <ul class="sub-menu nav flex-column ps-4" id="adminSubmenu">
                     <li class="nav-item">
+                        <a class="nav-link {{ Route::is('admin.users.index') ? 'active' : '' }}"
+                            href="{{ route('admin.users.index') }}">
+                            <i class="mdi mdi mdi-account-multiple menu-icon"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.services.index') }}">
                             <i class="mdi mdi-pencil menu-icon"></i> Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Route::is('admin.transactions') ? 'active' : '' }}"
+                            href="{{ route('admin.transactions') }}">
+                            <i class="mdi mdi-receipt-text-outline menu-icon"></i>
+                            All Transactions
                         </a>
                     </li>
                 </ul>

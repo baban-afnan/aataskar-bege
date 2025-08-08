@@ -7,6 +7,7 @@ use App\Http\Controllers\EnrollmentSyncController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\ServicesController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Support\Facades\Route;
@@ -44,11 +45,14 @@ Route::middleware(['auth', 'user.active'])->group(function () {
 
         Route::middleware(['user.active', 'user.is_kyced'])->group(function () {
             Route::get('/verify-nin', [VerificationController::class, 'ninVerify'])->name('verify-nin');
+            Route::get('/verify-nin2', [VerificationController::class, 'ninVerify2'])->name('verify-nin2');
             Route::get('/verify-nin-phone', [VerificationController::class, 'phoneVerify'])->name('verify-nin-phone');
             Route::get('/verify-bvn', [VerificationController::class, 'bvnVerify'])->name('verify-bvn');
+
             Route::get('/nin-personalize', [VerificationController::class, 'ninPersonalize'])->name('personalize-nin');
             Route::get('/ipe', [VerificationController::class, 'showIpe'])->name('ipe');
             Route::get('/bvn-enrollment', [EnrollmentController::class, 'bvnEnrollment'])->name('bvn-enrollment');
+            Route::get('/verify-demo', [VerificationController::class, 'demoVerify'])->name('verify-demo');
 
             //Ipe request
 
@@ -71,17 +75,33 @@ Route::middleware(['auth', 'user.active'])->group(function () {
             Route::post('/nin-retrieve', [VerificationController::class, 'ninRetrieve'])->name('ninRetrieve');
             Route::post('/nin-phone-retrieve', [VerificationController::class, 'ninPhoneRetrieve'])->name('ninPhoneRetrieve');
             Route::post('/nin-track-retrieve', [VerificationController::class, 'ninTrackRetrieve'])->name('ninTrackRetrieve');
+            Route::post('/nin-demo-retrieve', [VerificationController::class, 'ninDemoRetrieve'])->name('nin-demo-Retrieve');
+            Route::post('/nin-v2-retrieve', [VerificationController::class, 'ninV2Retrieve'])->name('nin-v2-Retrieve');
+
             //BVN
             Route::post('/bvn-retrieve', [VerificationController::class, 'bvnRetrieve'])->name('bvnRetrieve');
+            Route::get('/verify-bvn2', [VerificationController::class, 'bvnPhoneVerify'])->name('verify-bvn2');
+            Route::post('/bvn-retrieve2', [VerificationController::class, 'bvnPhoneRetrieve'])->name('bvnRetrieve2');
+
+            Route::get('/bvn-phone-search', [VerificationController::class, 'bvnPhoneSearch'])->name('bvn-phone-search');
+            Route::post('bvn-phone-search', [VerificationController::class, 'bvnPhoneRequest'])->name('bvn-phone-request');
 
             //PDF Downloads -----------------------------------------------------------------------------------------------------
             Route::get('/standardBVN/{id}', [VerificationController::class, 'standardBVN'])->name("standardBVN");
             Route::get('/premiumBVN/{id}', [VerificationController::class, 'premiumBVN'])->name("premiumBVN");
             Route::get('/plasticBVN/{id}', [VerificationController::class, 'plasticBVN'])->name("plasticBVN");
 
+
             Route::get('/regularSlip/{id}', [VerificationController::class, 'regularSlip'])->name("regularSlip");
             Route::get('/standardSlip/{id}', [VerificationController::class, 'standardSlip'])->name("standardSlip");
             Route::get('/premiumSlip/{id}', [VerificationController::class, 'premiumSlip'])->name("premiumSlip");
+            Route::get('/basicSlip/{id}', [VerificationController::class, 'basicSlip'])->name("basicSlip");
+
+            Route::get('/nin-services', [ServicesController::class, 'ninServices'])->name('nin.services');
+            Route::post('/nin-services/request', [ServicesController::class, 'requestNinService'])->name('nin.services.request');
+
+            Route::get('/nin-mod', [ServicesController::class, 'ninModification'])->name('nin.mod');
+            Route::post('/nin-services/mod', [ServicesController::class, 'requestModification'])->name('nin.services.mod');
 
             //Whatsapp API Support--------------------------------------------------------------------------
             Route::get('/support', function () {
@@ -91,6 +111,12 @@ Route::middleware(['auth', 'user.active'])->group(function () {
                 return redirect($url);
             })->name('support');
         });
+
+        Route::get('/profile', function () {
+            return view('user.profile');
+        })->name('profile');
+
+        Route::put('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
     });
     // Logout Route
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
@@ -98,14 +124,35 @@ Route::middleware(['auth', 'user.active'])->group(function () {
 
 // Admin Routes
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'user.active', 'user.admin']], function () {
-    // Route::get('/dashboard', [DashboardController::class, 'adminIndex'])->name('dashboard');
 
-    // // Site Settings
-    // Route::get('/settings', [SiteSettingController::class, 'edit'])->name('settings.edit');
-    // Route::put('/settings', [SiteSettingController::class, 'update'])->name('settings.update');
+
+    Route::get('/receipt/{referenceId}', [TransactionController::class, 'recieptAdmin'])->name('reciept');
+
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('user.show');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('user.update');
+    Route::patch('/users/{user}/activate', [UserController::class, 'activate'])->name('user.activate');
+
+    Route::get('/transactions', [TransactionController::class, 'transactions'])->name('transactions');
+
+
+    Route::get('/bvn-services', [ServicesController::class, 'bvnServicesList'])->name('bvn.services.list');
+    Route::post('/requests/{id}/{type}/update-bvn-status', [ServicesController::class, 'updateBvnRequestStatus'])->name('bvn-update-request-status');
+    Route::get('/view-bvn-request/{id}/{type}/edit', [ServicesController::class, 'showBvnRequests'])->name('bvn-view-request');
+
+
+    Route::get('/mod-services', [ServicesController::class, 'modServicesList'])->name('mod.services.list');
+    Route::post('/requests/{id}/{type}/update-mod-status', [ServicesController::class, 'updateModRequestStatus'])->name('mod-update-request-status');
+    Route::get('/view-mod-request/{id}/{type}/edit', [ServicesController::class, 'showModRequests'])->name('mod-view-request');
 
     // Services
     Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
     Route::get('/services/edit/{id}', [ServicesController::class, 'edit'])->name('services.edit');
     Route::put('/services/update/{id}', [ServicesController::class, 'update'])->name('services.update');
+
+    //NIN Services
+    Route::get('/nin-services', [ServicesController::class, 'ninServicesList'])->name('nin.services.list');
+    Route::post('/requests/{id}/{type}/update-status', [ServicesController::class, 'updateRequestStatus'])->name('update-request-status');
+    Route::get('/view-request/{id}/{type}/edit', [ServicesController::class, 'showRequests'])->name('view-request');
 });
