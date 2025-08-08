@@ -12,7 +12,7 @@ class TransactionService
      *
      * @return string
      */
-    private function generateReferenceNumber(): string
+    public function generateReferenceNumber(): string
     {
         $characters = '123456123456789071234567890890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $reference = '';
