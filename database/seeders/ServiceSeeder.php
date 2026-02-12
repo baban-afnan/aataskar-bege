@@ -125,7 +125,6 @@ class ServiceSeeder extends Seeder
                 ['name' => 'Date of birth update below 5 year', 'code' => '035', 'price' => 45000],
                 ['name' => 'Date of birth Update above 5 year', 'code' => '036', 'price' => 60000],
                 ['name' => 'Change of Residence Address', 'code' => '037', 'price' => 8000],
-                ['name' => 'Affidavit', 'code' => '900', 'price' => 2000],
             ]);
 
 
