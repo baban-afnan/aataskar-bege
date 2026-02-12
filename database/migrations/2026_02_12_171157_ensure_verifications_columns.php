@@ -9,9 +9,6 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('verifications', function (Blueprint $table) {

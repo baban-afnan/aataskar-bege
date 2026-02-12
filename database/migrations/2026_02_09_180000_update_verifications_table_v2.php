@@ -38,13 +38,23 @@ return new class extends Migration
 
         // Block 1.5: Make renamed/existing columns nullable
         Schema::table('verifications', function (Blueprint $table) {
-            $columnsToMakeNullable = [
+            $stringColumns = [
                 'firstname', 'middlename', 'surname', 'telephoneno', 
-                'photo_path', 'signature_path', 'birthdate'
+                'birthdate'
             ];
-            foreach ($columnsToMakeNullable as $col) {
+            $textColumns = [
+                'photo_path', 'signature_path'
+            ];
+
+            foreach ($stringColumns as $col) {
                 if (Schema::hasColumn('verifications', $col)) {
                     $table->string($col)->nullable()->change();
+                }
+            }
+            
+            foreach ($textColumns as $col) {
+                if (Schema::hasColumn('verifications', $col)) {
+                    $table->longText($col)->nullable()->change();
                 }
             }
         });
