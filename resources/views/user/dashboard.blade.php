@@ -182,145 +182,162 @@
                     <div class="container py-3" style="max-width: 100%">
                         <h4 class="fw-light mb-4 text-center">Our Services</h4>
                         <div class="row g-4">
-                            <!-- Service 1 -->
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
+
+                            <!-- Airtime -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-fingerprint text-white" style="font-size: 35px;"></i>
-                                            </div>
+                                        <div class="icon-box-media mx-auto mb-3 bg-primary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-phone text-white" style="font-size: 30px;"></i>
                                         </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">Verify NIN</h5>
-                                        <a href="{{ route('user.verify-nin') }}" class="stretched-link"></a>
+                                        <h6 class="fw-bold mb-1">Buy Airtime</h6>
+                                        <p class="text-muted small mb-0">Recharge instantly</p>
+                                        <a href="{{ route('user.airtime') }}" class="stretched-link"></a>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
+                            <!-- Data -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-fingerprint text-white" style="font-size: 35px;"></i>
-                                            </div>
+                                        <div class="icon-box-media mx-auto mb-3 bg-primary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-wifi text-white" style="font-size: 30px;"></i>
                                         </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">Verify NIN V2</h5>
-                                        <a href="{{ route('user.verify-nin2') }}" class="stretched-link"></a>
+                                        <h6 class="fw-bold mb-1">Buy Data</h6>
+                                        <p class="text-muted small mb-0">Browsing bundles</p>
+                                        <a href="{{ route('user.buy-data') }}" class="stretched-link"></a>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
+                            <!-- NIN Verification -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-fingerprint text-white" style="font-size: 35px;"></i>
-                                            </div>
+                                        <div class="icon-box-media mx-auto mb-3 bg-info bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-fingerprint text-white" style="font-size: 30px;"></i>
                                         </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">Verify NIN Demographic</h5>
-                                        <a href="{{ route('user.verify-demo') }}" class="stretched-link"></a>
+                                        <h6 class="fw-bold mb-1">NIN Verification</h6>
+                                        <p class="text-muted small mb-0">Verify NIN Slip</p>
+                                        <a href="{{ route('user.nin.verification.index') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NIN Phone -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-success bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-cellphone-lock text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">NIN Phone</h6>
+                                        <p class="text-muted small mb-0">Linked numbers</p>
+                                        <a href="{{ route('user.nin.phone.index') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NIN Demographic -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-warning bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-account-card-details text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">NIN Demo</h6>
+                                        <p class="text-muted small mb-0">Name & DOB</p>
+                                        <a href="{{ route('user.nin.demo.index') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <!-- bvn Demographic -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-warning bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                           <i class="mdi mdi-account-card-details text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">BVN Verification</h6>
+                                        <p class="text-muted small mb-0">Bvn verification</p>
+                                        <a href="{{ route('user.bvn-verification') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NIN Validation -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-secondary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-checkbox-marked-circle-outline text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">NIN Validation</h6>
+                                        <p class="text-muted small mb-0">Confirm records</p>
+                                        <a href="{{ route('user.nin.validation.index') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- NIN Modification -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-danger bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-account-edit text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">NIN Mod</h6>
+                                        <p class="text-muted small mb-0">Update details</p>
+                                        <a href="{{ route('user.nin.modification.index') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- BVN Modification -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-dark bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-bank text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">BVN Mod</h6>
+                                        <p class="text-muted small mb-0">Bank records</p>
+                                        <a href="{{ route('user.modification') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- IPE Clearance -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-purple bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #6f42c1 !important;">
+                                            <i class="mdi mdi-shield-check text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">IPE Clearance</h6>
+                                        <p class="text-muted small mb-0">Clearance check</p>
+                                        <a href="{{ route('user.ipe.index') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TIN Registration -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-primary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-file-document-edit text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">TIN Verification</h6>
+                                        <p class="text-muted small mb-0">Tax identification</p>
+                                        <a href="{{ route('user.tin.index') }}" class="stretched-link"></a>
                                     </div>
                                 </div>
                             </div>
 
 
-                            <!-- Service 1 -->
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-phone text-white" style="font-size: 35px;"></i>
-                                            </div>
-                                        </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">Verify NIN Phone</h5>
-                                        <a href="{{ route('user.verify-nin-phone') }}" class="stretched-link"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-search text-white" style="font-size: 35px;"></i>
-                                            </div>
-                                        </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">IPE</h5>
-                                        <a href="{{ route('user.ipe') }}" class="stretched-link"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Service 2 -->
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-fingerprint text-white" style="font-size: 35px;"></i>
-                                            </div>
-                                        </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">Verify BVN</h5>
-                                        <a href="{{ route('user.verify-bvn') }}" class="stretched-link"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-fingerprint text-white" style="font-size: 35px;"></i>
-                                            </div>
-                                        </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">Instant BVN Search</h5>
-                                        <a href="{{ route('user.verify-bvn2') }}" class="stretched-link"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-search text-white" style="font-size: 35px;"></i>
-                                            </div>
-                                        </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">Personalize</h5>
-                                        <a href="{{ route('user.personalize-nin') }}" class="stretched-link"></a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-6 col-md-6 col-lg-4">
-                                <div class="card shadow-sm border-0 h-100">
-                                    <div class="card-body text-center p-3">
-                                        <div class="icon-box mb-3">
-                                            <div class="icon-box-media mx-auto d-flex align-items-center justify-content-center bg-primary rounded-circle"
-                                                style="width: 70px; height: 70px;">
-                                                <i class="bi bi-person-plus text-white" style="font-size: 35px;"></i>
-                                            </div>
-                                        </div>
-                                        <h5 class="icon-box-title mb-0 fw-bold">BVN User</h5>
-                                        <a href="{{ route('user.bvn-enrollment') }}" class="stretched-link"></a>
-                                    </div>
-                                </div>
-                            </div>
                             {{-- <!-- Service 3 -->
                             <div class="col-6 col-md-6 col-lg-4">
                                 <div class="card shadow-sm border-0 h-100">
@@ -389,10 +406,14 @@
                                         <tr>
                                             <td>{{ $serialNumber++ }}</td>
                                             <td>
+                                                @if($data->referenceId)
                                                 <a target="_blank"
                                                     href="{{ route('user.reciept', $data->referenceId) }}">
                                                     {{ strtoupper($data->referenceId) }}
                                                 </a>
+                                                @else
+                                                <span class="text-muted">N/A</span>
+                                                @endif
                                             </td>
                                             <td>{{ $data->service_type }}</td>
                                             <td>{{ $data->service_description }}</td>
@@ -405,10 +426,16 @@
                                                 </span>
                                             </td>
                                             <td class="text-center">
+                                                @if($data->referenceId)
                                                 <a target="_blank" href="{{ route('user.reciept', $data->referenceId) }}"
                                                     class="btn btn-outline-primary btn-sm">
                                                     <i class="bi bi-download"></i> Download
                                                 </a>
+                                                @else
+                                                <button disabled class="btn btn-outline-secondary btn-sm">
+                                                    <i class="bi bi-slash-circle"></i> No Receipt
+                                                </button>
+                                                @endif
                                             </td>
                                         </tr>
 
@@ -431,59 +458,81 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="kycModal" tabindex="-1" aria-labelledby="kycModal" data-bs-keyboard="true"
-                data-bs-backdrop="static" data-bs-keyboard="false">
-
+            <div class="modal fade" id="kycModal" tabindex="-1" aria-labelledby="kycModal" data-bs-backdrop="static" data-bs-keyboard="false">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h6 class="modal-title" id="staticBackdropLabel2">Verify Account
-                            </h6>
+                            <h6 class="modal-title" id="staticBackdropLabel2">Verify Account</h6>
                         </div>
+
                         <div class="modal-body">
-                            We're excited to have you on board! However, we need to verify your identity before activating
-                            your
-                            account. provide your Identification number below.
+                            We're excited to have you on board! To activate your account and create your virtual account, please provide the information below.
                         </div>
 
                         @if ($errors->any())
                             <div class="alert alert-danger">
-                                <ul>
+                                <ul class="mb-0">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
                             </div>
                         @endif
+
                         @if (session('error'))
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 {{ session('error') }}
                             </div>
                         @endif
-                        <div class="d-flex justify-content-center align-items-center">
-                            <div class="col-md-6 col-lg-6">
-                                <form id="verify" name="verifyForm" method="POST"
-                                    action="{{ route('user.verify-user') }}">
-                                    @csrf
-                                    <div class="mb-3">
-                                        <p class="mb-2 text-muted text-center">Enter your BVN No.</p>
-                                        <input type="text" id="bvn" name="bvn"
-                                            class="form-control text-center" maxlength="11" required />
-                                    </div>
-                                    <div class="text-center mb-3 d-flex justify-content-center gap-2">
-                                        <button type="submit" id="submit" class="btn btn-primary">
-                                            <i class="lar la-check-circle"></i> Verify Now
-                                        </button>
-                                    </div>
-                                </form>
 
-                                <form method="POST" action="{{ route('logout') }}" class="text-center mb-3">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="las la-sign-out-alt"></i> Logout
+                        <div class="px-4 pb-4">
+                            <form id="verify" name="verifyForm" method="POST" action="{{ route('user.kyc.submit') }}">
+                                @csrf
+
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label small">First Name</label>
+                                        <input type="text" id="first_name" name="first_name" class="form-control" value="{{ old('first_name', auth()->user()->first_name ?? '') }}" required />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label small">Last Name</label>
+                                        <input type="text" id="last_name" name="last_name" class="form-control" value="{{ old('last_name', auth()->user()->last_name ?? '') }}" required />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label small">Phone Number</label>
+                                        <input type="tel" id="phone" name="phone" class="form-control" value="{{ old('phone', auth()->user()->phone_number ?? '') }}" maxlength="15" required />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label small">Email</label>
+                                        <input type="email" id="email" name="email" class="form-control" value="{{ old('email', auth()->user()->email ?? '') }}" required />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="bvn" class="form-label small">BVN</label>
+                                        <input type="text" id="bvn" name="bvn" class="form-control text-center" maxlength="11" value="{{ old('bvn', auth()->user()->bvn ?? '') }}" required />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="dob" class="form-label small">Date of Birth</label>
+                                        <input type="date" id="dob" name="dob" class="form-control" value="{{ old('dob', auth()->user()->dob ?? '') }}" required />
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-3 d-flex justify-content-center gap-2">
+                                    <button type="submit" id="submit" class="btn btn-primary">
+                                        <i class="lar la-check-circle"></i> Compile & Create Account
                                     </button>
-                                </form>
-                            </div>
+                            </form>
+                                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                        @csrf
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="las la-sign-out-alt"></i> Logout
+                                        </button>
+                                    </form>
+                                </div>
                         </div>
 
                     </div>
@@ -503,7 +552,7 @@
                             <small class="fw-semibold">Fund your wallet instantly by depositing
                                 into the virtual account number</small>
                             <ul class="list-unstyled virtual-account-list mt-3 mb-0">
-                                @if (auth()->user()->virtualAccount != null)
+                                @if (auth()->user()->virtualAccount->isNotEmpty())
                                     @foreach (auth()->user()->virtualAccount as $data)
                                         <li class="account-item mb-3 p-2">
                                             <div class="d-flex align-items-start">
@@ -530,7 +579,7 @@
 
                             <hr>
                             <center>
-                                <a style="text-decoration:none" class="mb-2" href="{{ route('user.support') }}">
+                                <a style="text-decoration:none" class="mb-2" href="#">
                                     <small class="fw-semibol text-danger">If your funds is not
                                         received within 30mins.
                                         Please Contact Support

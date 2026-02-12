@@ -73,7 +73,17 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'referral_code' => $referralDetails['myOwnCode'],
                 'referred_by' => $referralDetails['referral_id'],
+                'wallet_is_created' => 1,
             ]);
+
+            // Create a wallet for the user
+            Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0.00,
+                'deposit' => 0.00,
+                'bonus' => 0.00,
+            ]);
+
             // Commit the transaction
             DB::commit();
 

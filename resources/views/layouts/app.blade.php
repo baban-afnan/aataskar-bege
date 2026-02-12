@@ -127,6 +127,11 @@
     <script src="{{ asset('assets/index/js/wow.min.js') }}"></script>
     <script src="{{ asset('assets/index/js/scrolltopcontrol.js') }}"></script>
     <script src="{{ asset('assets/index/js/scripts.js') }}"></script>
+     <script src="{{ asset('assets/js/data.js') }}"></script>
+    <script src="{{ asset('assets/js/bvnservices.js') }}"></script>
+    {{-- <script src="{{ asset('assets/js/airtime.js') }}"></script> --}}
+
+
 </body>
 
 </html>

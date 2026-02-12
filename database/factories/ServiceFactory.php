@@ -135,6 +135,28 @@ class ServiceFactory extends Factory
                 'status' => 'enabled',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
+            ],
+            [
+                'service_code' => '116',
+                'name' => 'NIN Demographic',
+                'category' => 'Verifications',
+                'type' => 'Uncategorized',
+                'amount' => 150.00,
+                'description' => 'NIN Demographic Verification fee',
+                'status' => 'enabled',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'service_code' => '117',
+                'name' => 'Basic NIN Slip',
+                'category' => 'Verifications',
+                'type' => 'Uncategorized',
+                'amount' => 100.00,
+                'description' => 'Basic NIN Slip Fee',
+                'status' => 'enabled',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]
         ];
     }

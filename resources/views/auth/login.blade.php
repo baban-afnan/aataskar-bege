@@ -8,9 +8,7 @@
             <div class="col-lg-6 d-flex align-items-center justify-content-center">
                 <div class="auth-form-transparent text-start p-3">
                     <div class="brand-logo">
-                        <a href="{{ url('/') }}"> <img
-                                src="{{ asset('assets/images/' . $settings->logo ?? 'assets/images/logo.svg') }}"
-                                alt="logo"></a>
+                    <img src="{{ asset('assets/images/logo.png') }}" alt="logo" style="max-width: 50px; height: auto;">
                     </div>
                     <h4>Welcome back!</h4>
                     <h6 class="fw-light">Happy to see you again!</h6>

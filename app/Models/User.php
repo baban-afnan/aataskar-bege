@@ -32,13 +32,18 @@ class User extends Authenticatable
         'role',
         'is_active',
         'kyc_status',
+        'first_name',
+        'last_name',
+        'bvn',
+        'dob',
         'wallet_is_created',
         'vwallet_is_created',
         'current_sign_in_at',
         'last_sign_in_at',
         'created_by',
         'deleted_at',
-        'deleted_by'
+        'deleted_by',
+        'pin'
     ];
 
 

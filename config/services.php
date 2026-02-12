@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'arewa' => [
+        'base_url' => env('AREWA_BASE_URL', 'https://api.arewa.com.ng'), // Default if env missing
+        'token' => env('AREWA_API_TOKEN'),
+    ],
+
 ];

@@ -158,6 +158,21 @@ class UserController extends Controller
             $user->password = Hash::make($validated['password']);
         }
 
+        // Handle PIN update
+        if ($request->filled('pin')) {
+            $request->validate([
+                'pin' => 'digits:4',
+                'old_pin' => 'nullable|digits:4',
+            ]);
+
+            // If user already has a PIN, verify old PIN
+            if ($user->pin && $request->old_pin !== $user->pin) {
+                return back()->withErrors(['old_pin' => 'The provided old PIN is incorrect.']);
+            }
+
+            $user->pin = $request->pin;
+        }
+
         $user->save();
 
         return back()->with('success', 'Profile updated successfully.');

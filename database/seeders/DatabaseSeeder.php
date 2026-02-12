@@ -8,6 +8,7 @@ use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -20,9 +21,13 @@ class DatabaseSeeder extends Seeder
      public function run(): void
     {
 
+        // Temporarily disable foreign key checks so truncating referenced tables
+        // doesn't fail when other tables still have foreign key constraints.
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         SiteSetting::truncate();
         Service::truncate();
         ClaimCount::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
 
        User::updateOrCreate(

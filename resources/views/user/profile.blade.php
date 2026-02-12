@@ -61,6 +61,33 @@
                                     <input type="password" class="form-control" name="password_confirmation" id="password_confirmation">
                                 </div>
 
+                                <hr class="my-4">
+                                <h5 class="mb-3">Transaction PIN</h5>
+                                
+                                @if(Auth::user()->pin)
+                                    <!-- Old PIN (Only if PIN exists) -->
+                                    <div class="form-group mb-3">
+                                        <label for="old_pin">Old PIN</label>
+                                        <input type="password" class="form-control" name="old_pin" id="old_pin" maxlength="4" placeholder="Enter current 4-digit PIN">
+                                        @error('old_pin')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                @else
+                                    <div class="alert alert-info py-2">Set your 4-digit transaction PIN for secure purchases.</div>
+                                @endif
+
+                                <!-- New PIN -->
+                                <div class="form-group mb-3">
+                                    <label for="pin">New PIN</label>
+                                    <input type="password" class="form-control" name="pin" id="pin" maxlength="4" placeholder="Enter new 4-digit PIN">
+                                    @error('pin')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+
+
+
                                 <button type="submit" class="btn btn-primary w-100">Update Profile</button>
                             </form>
                         </div>

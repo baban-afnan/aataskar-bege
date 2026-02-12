@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-header">{{ __('Reset Password') }}</div>
 
-                    <div class="card-body">
+                   
                         @if (Session::has('error'))
                             <div class="alert alert-danger">
                                 {{ Session::get('error') }}

@@ -1,25 +1,13 @@
 @extends('layouts.auth')
 
 @section('title', 'Register')
-@push('styles')
-    <style>
-        .form-check {
-            display: flex;
-        }
-
-        .form-check .form-check-label {
-            margin-left: 0.85rem;
-        }
-    </style>
-@endpush
-
 @section('content')
     <div class="content-wrapper d-flex align-items-stretch auth auth-img-bg">
         <div class="row flex-grow">
             <div class="col-lg-6 d-flex align-items-center justify-content-center">
                 <div class="auth-form-transparent text-start p-3">
                     <div class="brand-logo">
-                        <img src="{{ asset('assets/images/' . $settings->logo ?? 'assets/images/logo.svg') }}" alt="logo">
+                        <img src="{{ asset('assets/images/logo.png') }}" alt="logo" style="max-width: 50px; height: auto;">
                     </div>
                     <h4>New here?</h4>
                     <h6 class="fw-light">Join us today! It takes only a few steps</h6>
