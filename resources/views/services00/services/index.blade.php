@@ -14,8 +14,8 @@
                     </ul>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <button class="btn btn-primary" style="background-color: #0db4bd; border: none;" data-bs-toggle="modal" data-bs-target="#addServiceModal">
-                        <i class="mdi mdi-plus me-1"></i> Add Service
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                        <i class="ti ti-plus me-1"></i> Add Service
                     </button>
                 </div>
             </div>
@@ -32,7 +32,7 @@
                             <h3 class="stats-value mb-0 text-white">{{ $totalServicesCount }}</h3>
                         </div>
                         <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
-                            <i class="mdi mdi-layers-outline text-white" style="font-size: 30px;"></i>
+                            <i class="ti ti-server fs-24 text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                             <h3 class="stats-value mb-0 text-white">{{ $activeServicesCount }}</h3>
                         </div>
                         <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
-                            <i class="mdi mdi-pulse text-white" style="font-size: 30px;"></i>
+                            <i class="ti ti-activity fs-24 text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                             <h3 class="stats-value mb-0 text-white">{{ $inactiveServicesCount }}</h3>
                         </div>
                         <div class="avatar avatar-lg bg-white bg-opacity-25 rounded-3">
-                            <i class="mdi mdi-layers-off-outline text-white" style="font-size: 30px;"></i>
+                            <i class="ti ti-server-off fs-24 text-white"></i>
                         </div>
                     </div>
                 </div>
@@ -110,8 +110,8 @@
                 <form action="{{ route('admin.services.index') }}" method="GET">
                     <div class="input-icon-end position-relative">
                         <input type="text" name="search" class="form-control" placeholder="Search services..." value="{{ request('search') }}">
-                        <span class="input-icon-addon position-absolute end-0 top-50 translate-middle-y me-3">
-                            <i class="mdi mdi-magnify"></i>
+                        <span class="input-icon-addon">
+                            <i class="ti ti-search"></i>
                         </span>
                         @if(request('status'))
                             <input type="hidden" name="status" value="{{ request('status') }}">
@@ -192,20 +192,20 @@
                             <td>{{ $service->created_at?->format('d M Y') ?? 'N/A' }}</td>
                             <td>
                                 @if($service->is_active)
-                                    <span class="badge bg-soft-success d-flex align-items-center badge-xs text-success">
-                                        <i class="mdi mdi-circle me-1" style="font-size: 8px;"></i>Active
+                                    <span class="badge bg-soft-success d-flex align-items-center badge-xs">
+                                        <i class="ti ti-point-filled me-1"></i>Active
                                     </span>
                                 @else
-                                    <span class="badge bg-soft-danger d-flex align-items-center badge-xs text-danger">
-                                        <i class="mdi mdi-circle me-1" style="font-size: 8px;"></i>Inactive
+                                    <span class="badge bg-soft-danger d-flex align-items-center badge-xs">
+                                        <i class="ti ti-point-filled me-1"></i>Inactive
                                     </span>
                                 @endif
                             </td>
                             <td class="text-end pe-4">
                                 <div class="action-icon d-inline-flex">
-                                    <a href="{{ route('admin.services.show', $service) }}" class="me-2 text-primary" title="Configure"><i class="mdi mdi-cog-outline fs-18"></i></a>
+                                    <a href="{{ route('admin.services.show', $service) }}" class="me-2" title="Configure"><i class="ti ti-settings"></i></a>
                                     <a href="#"
-                                       class="me-2 edit-service-btn text-info"
+                                       class="me-2 edit-service-btn"
                                        data-bs-toggle="modal"
                                        data-bs-target="#editServiceModal"
                                        data-id="{{ $service->id }}"
@@ -214,10 +214,10 @@
                                        data-image="{{ $service->image ?? '' }}"
                                        data-is-active="{{ $service->is_active }}"
                                        title="Edit">
-                                        <i class="mdi mdi-pencil fs-18"></i>
+                                        <i class="ti ti-edit"></i>
                                     </a>
                                     <button type="button" class="btn btn-link p-0 text-danger" onclick="confirmDelete('{{ $service->id }}', '{{ $service->name }}')" title="Delete">
-                                        <i class="mdi mdi-delete fs-18"></i>
+                                        <i class="ti ti-trash"></i>
                                     </button>
                                     <form id="delete-form-{{ $service->id }}" action="{{ route('admin.services.destroy', $service) }}" method="POST" class="d-none">
                                         @csrf
@@ -259,11 +259,11 @@
                     <div class="modal-body">
                         <div class="mb-3 text-center">
                             <div class="avatar avatar-xl bg-soft-secondary text-secondary rounded-circle mb-2 d-flex align-items-center justify-content-center mx-auto">
-                                <i class="mdi mdi-image-outline" style="font-size: 40px;"></i>
+                                <i class="ti ti-photo fs-2"></i>
                             </div>
                             <div class="mt-2">
                                 <label class="btn btn-sm btn-soft-primary" for="addImage">
-                                    <i class="mdi mdi-upload me-1"></i> Upload Icon
+                                    <i class="ti ti-upload me-1"></i> Upload Icon
                                 </label>
                                 <input type="file" name="image" id="addImage" class="d-none" accept="image/*">
                             </div>
@@ -308,7 +308,7 @@
                             <img id="editServiceImage" src="" alt="Current Image" class="rounded-circle mb-2 mx-auto" width="80" height="80" style="display:none;">
                             <div class="mt-2">
                                 <label class="btn btn-sm btn-soft-primary" for="editImage">
-                                    <i class="mdi mdi-camera me-1"></i> Change Icon
+                                    <i class="ti ti-camera me-1"></i> Change Icon
                                 </label>
                                 <input type="file" name="image" id="editImage" class="d-none" accept="image/*">
                             </div>
@@ -373,7 +373,7 @@
 
         <style>
             :root {
-                --primary-gradient: linear-gradient(135deg, #0db4bd 0%, #09848a 100%);
+                --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
                 --success-gradient: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
                 --info-gradient: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
                 --warning-gradient: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
@@ -441,7 +441,7 @@
                 text: "Are you sure you want to do this? If yes, click then continue.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#0db4bd',
+                confirmButtonColor: '#6366f1',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, continue!',
                 cancelButtonText: 'Cancel'

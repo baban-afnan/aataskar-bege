@@ -202,7 +202,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-primary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-wifi text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-database-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">Buy Data</h6>
                                         <p class="text-muted small mb-0">Browsing bundles</p>
@@ -211,12 +211,27 @@
                                 </div>
                             </div>
 
+                                 <!-- Data -->
+                            <div class="col-6 col-md-4 col-lg-3">
+                                <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
+                                    <div class="card-body text-center p-3">
+                                        <div class="icon-box-media mx-auto mb-3 bg-primary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
+                                            <i class="mdi mdi-wifi-cog text-white" style="font-size: 30px;"></i>
+                                        </div>
+                                        <h6 class="fw-bold mb-1">Buy SME Data</h6>
+                                        <p class="text-muted small mb-0">Browsing bundles</p>
+                                        <a href="{{ route('user.buy-sme-data') }}" class="stretched-link"></a>
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <!-- NIN Verification -->
                             <div class="col-6 col-md-4 col-lg-3">
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-info bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-fingerprint text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-account-search-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">NIN Verification</h6>
                                         <p class="text-muted small mb-0">Verify NIN Slip</p>
@@ -230,7 +245,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-success bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-cellphone-lock text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-phone-account text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">NIN Phone</h6>
                                         <p class="text-muted small mb-0">Linked numbers</p>
@@ -244,7 +259,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-warning bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-account-card-details text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-card-text-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">NIN Demo</h6>
                                         <p class="text-muted small mb-0">Name & DOB</p>
@@ -258,7 +273,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-warning bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                           <i class="mdi mdi-account-card-details text-white" style="font-size: 30px;"></i>
+                                           <i class="mdi mdi-shield-search text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">BVN Verification</h6>
                                         <p class="text-muted small mb-0">Bvn verification</p>
@@ -272,7 +287,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-secondary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-checkbox-marked-circle-outline text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-account-check-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">NIN Validation</h6>
                                         <p class="text-muted small mb-0">Confirm records</p>
@@ -286,7 +301,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-danger bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-account-edit text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-account-edit-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">NIN Mod</h6>
                                         <p class="text-muted small mb-0">Update details</p>
@@ -300,7 +315,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-dark bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-bank text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-account-edit-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">BVN Mod</h6>
                                         <p class="text-muted small mb-0">Bank records</p>
@@ -314,7 +329,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-purple bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px; background-color: #6f42c1 !important;">
-                                            <i class="mdi mdi-shield-check text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-file-check-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">IPE Clearance</h6>
                                         <p class="text-muted small mb-0">Clearance check</p>
@@ -328,7 +343,7 @@
                                 <div class="card shadow-sm border-0 h-100 service-card hover-shadow">
                                     <div class="card-body text-center p-3">
                                         <div class="icon-box-media mx-auto mb-3 bg-primary bg-gradient d-flex align-items-center justify-content-center rounded-circle" style="width: 60px; height: 60px;">
-                                            <i class="mdi mdi-file-document-edit text-white" style="font-size: 30px;"></i>
+                                            <i class="mdi mdi-file-percent-outline text-white" style="font-size: 30px;"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">TIN Verification</h6>
                                         <p class="text-muted small mb-0">Tax identification</p>

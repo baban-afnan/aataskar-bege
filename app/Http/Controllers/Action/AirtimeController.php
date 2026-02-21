@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AirtimeController extends Controller
 {
@@ -115,90 +116,77 @@ class AirtimeController extends Controller
         $discountAmount = ($amount * $discountPercentage) / 100;
         $payableAmount = $amount - $discountAmount;
 
-        // 4. Check Wallet Balance
-        $wallet = Wallet::where('user_id', $user->id)->first();
-        if (!$wallet || $wallet->balance < $payableAmount) {
-            return redirect()->back()->with('error', 'Insufficient wallet balance! You need ₦' . number_format($payableAmount, 2));
-        }
-
-        // 5. Call Arewa Smart Airtime API
+        // Charge-first strategy with DB transaction
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->getApiToken(),
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-            ])->post($this->getApiBaseUrl() . '/airtime/purchase', [
-                'network'    => $networkCode,
-                'mobileno'   => $mobile,
-                'amount'     => $amount,
-                'request_id' => $requestId,
-            ]);
+            return DB::transaction(function () use ($user, $payableAmount, $mobile, $amount, $networkCode, $networkKey, $requestId, $discountAmount) {
+                // Lock wallet for update to prevent race conditions
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+                
+                if (!$wallet || $wallet->balance < $payableAmount) {
+                    throw new \Exception('Insufficient wallet balance! You need ₦' . number_format($payableAmount, 2));
+                }
 
+                // 1. Deduct funds immediately
+                $wallet->decrement('balance', $payableAmount);
+
+                try {
+                    // 2. Call Arewa Smart Airtime API
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $this->getApiToken(),
+                        'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
+                    ])->post($this->getApiBaseUrl() . '/airtime/purchase', [
+                        'network'    => $networkCode,
+                        'mobileno'   => $mobile,
+                        'amount'     => $amount,
+                        'request_id' => $requestId,
+                    ]);
+
+                    $data = $response->json();
+                    Log::info('Arewa Smart API Response', ['response' => $data]);
+
+                    if ($response->successful() && isset($data['status']) && $data['status'] === 'success') {
+                        // Success: Create Transaction Record and commit
+                        $apiData = $data['data'] ?? [];
+                        $transactionRef = $apiData['transaction_ref'] ?? $requestId;
+                        $commissionEarned = $apiData['commission_earned'] ?? 0;
+
+                        Transaction::create([
+                            'referenceId'         => $transactionRef,
+                            'user_id'             => $user->id,
+                            'amount'              => $payableAmount,
+                            'service_type'        => 'airtime',
+                            'service_description' => "Airtime purchase of ₦{$amount} for {$mobile} ({$networkKey})",
+                            'type'                => 'debit',
+                            'status'              => 'Approved',
+                            'gateway'             => 'arewa_smart',
+                        ]);
+
+                        return redirect()->route('user.thankyou')->with([
+                            'success'           => 'Airtime purchase successful!',
+                            'transaction_ref'   => $transactionRef,
+                            'request_id'        => $requestId,
+                            'mobile'            => $mobile,
+                            'network'           => ucfirst($networkKey),
+                            'amount'            => $amount,
+                            'paid'              => $payableAmount,
+                            'commission_earned' => $commissionEarned,
+                            'type'              => 'airtime'
+                        ]);
+                    } else {
+                        // API Failed: Rollback (via exception)
+                        $errorMessage = $data['message'] ?? 'Airtime purchase failed. Please try again.';
+                        throw new \Exception($errorMessage);
+                    }
+
+                } catch (\Exception $e) {
+                    // API Exception: Rollback (is handled by the outer closure throwing)
+                    Log::error('Arewa Smart Airtime API error: ' . $e->getMessage());
+                    throw $e;
+                }
+            });
         } catch (\Exception $e) {
-            Log::error('Arewa Smart API Connection Error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Could not connect to airtime provider. Please try again later.');
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
-        // 6. Process Response
-        $data = $response->json();
-        Log::info('Arewa Smart API Response', ['response' => $data]);
-
-        $isSuccessful = false;
-        
-        if ($response->successful() && isset($data['status']) && $data['status'] === 'success') {
-            $isSuccessful = true;
-        }
-
-        if ($isSuccessful) {
-            // Deduct Wallet (Payable Amount)
-            $oldBalance = $wallet->balance;
-            $wallet->decrement('balance', $payableAmount);
-            $newBalance = $wallet->balance;
-
-            // Extract API response data
-            $apiData = $data['data'] ?? [];
-            $transactionRef = $apiData['transaction_ref'] ?? $requestId;
-            $commissionEarned = $apiData['commission_earned'] ?? 0;
-
-
-            // Create Transaction Record
-            Transaction::create([
-                'referenceId' => $transactionRef,
-                'user_id'         => $user->id,
-                'amount'          => $payableAmount,
-                'service_type'    => 'airtime',
-                'service_description'     => "Airtime purchase of ₦{$amount} for {$mobile} ({$networkKey})",
-                'type'            => 'debit',
-                'status'          => 'approved',
-                'gateway'         => 'arewa_smart',
-                'metadata'        => json_encode([
-                    'phone'             => $mobile,
-                    'network'           => $networkKey,
-                    'network_code'      => $networkCode,
-                    'original_amt'      => $amount,
-                    'discount'          => $discountAmount,
-                    'commission_earned' => $commissionEarned,
-                    'api_response'      => $data,
-                ]),
-                'performed_by' => $user->first_name . ' ' . $user->last_name,
-                'approved_by'  => $user->id,
-            ]);
-
-            return redirect()->route('user.thankyou')->with([
-                'success'           => 'Airtime purchase successful!',
-                'transaction_ref'   => $transactionRef,
-                'request_id'        => $requestId,
-                'mobile'            => $mobile,
-                'network'           => ucfirst($networkKey),
-                'amount'            => $amount,
-                'paid'              => $payableAmount,
-                'commission_earned' => $commissionEarned,
-                'type'              => 'airtime'
-            ]);
-        }
-
-        Log::error('Arewa Smart API Response Error', ['response' => $data]);
-        $errorMessage = $data['message'] ?? 'Airtime purchase failed. Please try again.';
-        return redirect()->back()->with('error', $errorMessage);
     }
 }

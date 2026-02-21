@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ElectricityController extends Controller
 {
@@ -192,95 +193,94 @@ class ElectricityController extends Controller
         }
 
         $discountAmount = ($amount * $discountPercentage) / 100;
+        $discoName = strtoupper(str_replace('-', ' ', $request->service_id));
         $payableAmount = $amount - $discountAmount;
 
-        // 4. Check Wallet Balance
-        $wallet = Wallet::where('user_id', $user->id)->first();
-        if (!$wallet || $wallet->balance < $payableAmount) {
-            return redirect()->back()->with('error', 'Insufficient wallet balance! You need ₦' . number_format($payableAmount, 2));
-        }
-
-        // 5. Call Arewa Smart Electricity API
+        // Charge-first strategy with DB transaction
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->getApiToken(),
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-            ])->post($this->getApiBaseUrl() . '/electricity/purchase', [
-                'serviceID'      => $request->service_id,
-                'billersCode'    => $request->meter_number,
-                'variation_code' => $request->service_id . '-' . $request->meter_type,
-                'amount'         => $amount,
-                'phone'          => $request->phone,
-                'request_id'     => $requestId,
-            ]);
-
-            if ($response->successful()) {
-                $result = $response->json();
+            return DB::transaction(function () use ($user, $payableAmount, $request, $requestId, $discoName, $amount, $discountAmount) {
+                // Lock wallet for update to prevent race conditions
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
                 
-                if (isset($result['status']) && $result['status'] === 'success') {
-                    // Deduct Wallet (Payable Amount)
-                    $wallet->decrement('balance', $payableAmount);
+                if (!$wallet || $wallet->balance < $payableAmount) {
+                    throw new \Exception('Insufficient wallet balance! You need ₦' . number_format($payableAmount, 2));
+                }
 
-                    $apiData = $result['data'] ?? [];
-                    // Extract Token (for prepaid)
-                    $token = $apiData['token'] ?? null;
-                    $transactionRef = $apiData['transaction_ref'] ?? $requestId;
-                    
-                    $finalToken = $token ?? 'Electricity Payment Successful';
+                // 1. Deduct funds immediately
+                $wallet->decrement('balance', $payableAmount);
 
-                    $discoName = strtoupper(str_replace('-', ' ', $request->service_id));
-                    $description = "Electricity Payment - {$discoName} ({$request->meter_type}) - Meter: {$request->meter_number}";
-                    if($request->meter_type == 'prepaid' && $token) {
-                        $description .= " - Token: {$token}";
+                try {
+                    // 2. Call Arewa Smart Electricity API
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $this->getApiToken(),
+                        'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
+                    ])->post($this->getApiBaseUrl() . '/electricity/purchase', [
+                        'serviceID'      => $request->service_id,
+                        'billersCode'    => $request->meter_number,
+                        'variation_code' => $request->service_id . '-' . $request->meter_type,
+                        'amount'         => $amount,
+                        'phone'          => $request->phone,
+                        'request_id'     => $requestId,
+                    ]);
+
+                    if ($response->successful()) {
+                        $result = $response->json();
+                        
+                        if (isset($result['status']) && $result['status'] === 'success') {
+                            $apiData = $result['data'] ?? [];
+                            $token = $apiData['token'] ?? null;
+                            $transactionRef = $apiData['transaction_ref'] ?? $requestId;
+                            $finalToken = $token ?? 'Electricity Payment Successful';
+
+                            $description = "Electricity Payment - {$discoName} ({$request->meter_type}) - Meter: {$request->meter_number}";
+                            if($request->meter_type == 'prepaid' && $token) {
+                                $description .= " - Token: {$token}";
+                            }
+
+                            // Success: Create Transaction Record and commit
+                            Transaction::create([
+                                'referenceId'         => $transactionRef,
+                                'user_id'             => $user->id,
+                                'amount'              => $payableAmount,
+                                'service_type'        => 'electricity',
+                                'service_description' => $description,
+                                'type'                => 'debit',
+                                'status'              => 'Approved',
+                                'gateway'             => 'arewa_smart',
+                            ]);
+
+                            return redirect()->route('user.thankyou')->with([
+                                'success'         => 'Electricity payment successful!',
+                                'transaction_ref' => $transactionRef,
+                                'request_id'      => $requestId,
+                                'mobile'          => $request->meter_number,
+                                'amount'          => $amount,
+                                'paid'            => $payableAmount,
+                                'token'           => $finalToken,
+                                'network'         => $discoName,
+                                'type'            => 'electricity'
+                            ]);
+                        } else {
+                            // API Failed: Rollback (via exception)
+                            Log::error('Electricity API Error', ['response' => $result]);
+                            $errorMessage = $result['message'] ?? 'Payment failed. Please try again.';
+                            throw new \Exception($errorMessage);
+                        }
+                    } else {
+                        // HTTP Error: Rollback
+                        Log::error('Electricity HTTP Error', ['body' => $response->body()]);
+                        throw new \Exception('Service unavailable.');
                     }
 
-                    // Transaction Record
-                    Transaction::create([
-                        'referenceId' => $transactionRef,
-                        'user_id'         => $user->id,
-                        'amount'          => $payableAmount,
-                        'description'     => $description,
-                        'type'            => 'debit',
-                        'status'          => 'completed',
-                        'metadata'        => json_encode([
-                            'meter_number' => $request->meter_number,
-                            'meter_type'   => $request->meter_type,
-                            'service_id'   => $request->service_id,
-                            'token'        => $finalToken,
-                            'original_amt' => $amount,
-                            'discount'     => $discountAmount,
-                            'api_response' => $result,
-                        ]),
-                        'performed_by' => $user->first_name . ' ' . $user->last_name,
-                        'approved_by'  => $user->id,
-                    ]);
-
-                    return redirect()->route('thankyou')->with([
-                        'success'         => 'Electricity payment successful!',
-                        'transaction_ref' => $transactionRef,
-                        'request_id'      => $requestId,
-                        'mobile'          => $request->meter_number,
-                        'amount'          => $amount,
-                        'paid'            => $payableAmount,
-                        'token'           => $finalToken,
-                        'network'         => $discoName,
-                        'type'            => 'electricity'
-                    ]);
-
-                } else {
-                    Log::error('Electricity API Error', ['response' => $result]);
-                    return back()->with('error', $result['message'] ?? 'Payment failed. Please try again.');
+                } catch (\Exception $e) {
+                    // API/Internal Exception: Rollback (is handled by the outer closure throwing)
+                    Log::error('Electricity refactor API error: ' . $e->getMessage());
+                    throw $e;
                 }
-            } else {
-                Log::error('Electricity HTTP Error', ['body' => $response->body()]);
-                return back()->with('error', 'Service unavailable.');
-            }
-
+            });
         } catch (\Exception $e) {
-            Log::error('Electricity Exception: ' . $e->getMessage());
-            return back()->with('error', 'An error occurred during payment processing.');
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
-
 }

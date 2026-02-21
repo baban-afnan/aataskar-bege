@@ -60,7 +60,7 @@
                                     <label class="form-label fw-semibold">Select Network</label>
                                     <select name="network" id="service_id" class="form-select text-center" required>
                                         <option value="">Choose Network</option>
-                                        @foreach ($servicename as $service)
+                                        @foreach ($data_variation as $service)
                                             <option value="{{ $service->service_id }}">{{ $service->service_name }}</option>
                                         @endforeach
                                     </select>

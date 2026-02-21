@@ -2,7 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\Admin\DataVariationController;
+use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\EnrollmentSyncController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\ServicesController;
@@ -24,6 +25,8 @@ use App\Http\Controllers\Verification\BvnverificationController;
 use App\Http\Controllers\Agency\NinValidationController;
 use App\Http\Controllers\Agency\NinModificationController;
 use App\Http\Controllers\Agency\IpeController;
+use App\Http\Controllers\Action\SmeDataController;
+use App\Http\Controllers\Admin\SmeDataController as AdminSmeDataController;
 
 
 Route::get('/', function () {
@@ -86,11 +89,15 @@ Route::middleware(['auth', 'user.active'])->group(function () {
         Route::get('/fetch-data-bundles-price', [DataController::class, 'fetchBundlePrice'])->name('fetch.bundle.price');
         Route::post('/verify-pin', [DataController::class, 'verifyPin'])->name('verify.pin');
 
-        Route::get('/sme-data', [DataController::class, 'sme_data'])->name('sme-data');
-        Route::get('/fetch-data-type', [DataController::class, 'fetchDataType']);
-        Route::get('/fetch-data-plan', [DataController::class, 'fetchDataPlan']);
-        Route::get('/fetch-sme-data-bundles-price', [DataController::class, 'fetchSmeBundlePrice']);
-        Route::post('/buy-sme-data', [DataController::class, 'buySMEdata'])->name('buy-sme-data');
+          // SME Data
+        Route::prefix('buy-sme-data')->group(function () {
+        Route::get('/', [SmeDataController::class, 'index'])->name('buy-sme-data');
+        Route::post('/buy', [SmeDataController::class, 'buySMEdata'])->name('buy-sme-data.submit');
+        Route::get('/fetch-type', [SmeDataController::class, 'fetchDataType'])->name('sme.fetch.type');
+        Route::get('/fetch-plan', [SmeDataController::class, 'fetchDataPlan'])->name('sme.fetch.plan');
+        Route::get('/fetch-price', [SmeDataController::class, 'fetchSmeBundlePrice'])->name('sme.fetch.price');
+      });
+
 
         // Education
         Route::get('/education', [EducationalController::class, 'pin'])->name("education");
@@ -236,23 +243,40 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'u
     Route::get('/transactions', [TransactionController::class, 'transactions'])->name('transactions');
 
 
-    Route::get('/bvn-services', [ServicesController::class, 'bvnServicesList'])->name('bvn.services.list');
-    Route::post('/requests/{id}/{type}/update-bvn-status', [ServicesController::class, 'updateBvnRequestStatus'])->name('bvn-update-request-status');
-    Route::get('/view-bvn-request/{id}/{type}/edit', [ServicesController::class, 'showBvnRequests'])->name('bvn-view-request');
+    Route::get('/transactions', [TransactionController::class, 'transactions'])->name('transactions');
 
+      // Service Management
+        Route::prefix('services')->name('services.')->group(function () {
+            Route::get('/', [ServiceController::class, 'index'])->name('index');
+            Route::post('/', [ServiceController::class, 'store'])->name('store');
+            Route::get('/{service}', [ServiceController::class, 'show'])->name('show');
+            Route::put('/{service}', [ServiceController::class, 'update'])->name('update');
+            Route::delete('/{service}', [ServiceController::class, 'destroy'])->name('destroy');
 
-    Route::get('/mod-services', [ServicesController::class, 'modServicesList'])->name('mod.services.list');
-    Route::post('/requests/{id}/{type}/update-mod-status', [ServicesController::class, 'updateModRequestStatus'])->name('mod-update-request-status');
-    Route::get('/view-mod-request/{id}/{type}/edit', [ServicesController::class, 'showModRequests'])->name('mod-view-request');
+            // Fields & Prices
+            Route::post('/{service}/fields', [ServiceController::class, 'storeField'])->name('fields.store');
+            Route::put('/fields/{field}', [ServiceController::class, 'updateField'])->name('fields.update');
+            Route::delete('/fields/{field}', [ServiceController::class, 'destroyField'])->name('fields.destroy');
+            Route::post('/{service}/prices', [ServiceController::class, 'storePrice'])->name('prices.store');
+            Route::put('/prices/{price}', [ServiceController::class, 'updatePrice'])->name('prices.update');
+            Route::delete('/prices/{price}', [ServiceController::class, 'destroyPrice'])->name('prices.destroy');
+        });
 
-    // Services
-    Route::get('/services', [ServicesController::class, 'index'])->name('services.index');
-    Route::get('/services/edit/{id}', [ServicesController::class, 'edit'])->name('services.edit');
-    Route::put('/services/update/{id}', [ServicesController::class, 'update'])->name('services.update');
+        // Data & SME Management
+        Route::prefix('data-variations')->name('data-variations.')->group(function () {
+            Route::get('/', [DataVariationController::class, 'index'])->name('index');
+            Route::get('/{service}', [DataVariationController::class, 'show'])->name('show');
+            Route::post('/', [DataVariationController::class, 'store'])->name('store');
+            Route::put('/{dataVariation}', [DataVariationController::class, 'update'])->name('update');
+            Route::delete('/{dataVariation}', [DataVariationController::class, 'destroy'])->name('destroy');
+        });
 
-    //NIN Services
-    Route::get('/nin-services', [ServicesController::class, 'ninServicesList'])->name('nin.services.list');
-    Route::post('/requests/{id}/{type}/update-status', [ServicesController::class, 'updateRequestStatus'])->name('update-request-status');
-    Route::get('/view-request/{id}/{type}/edit', [ServicesController::class, 'showRequests'])->name('view-request');
+        Route::prefix('sme-data')->name('sme-data.')->group(function () {
+            Route::get('/', [AdminSmeDataController::class, 'index'])->name('index');
+            Route::get('/sync', [AdminSmeDataController::class, 'sync'])->name('sync');
+            Route::put('/{smeData}/update', [AdminSmeDataController::class, 'update'])->name('update');
+        });
+    });
+
 });
-});
+

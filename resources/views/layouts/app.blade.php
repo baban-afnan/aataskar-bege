@@ -39,6 +39,9 @@
      <link rel="shortcut icon"
         href="{{ asset('assets/images/' . $settings->favicon ?? 'assets/images/default_favicon.png') }}">
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
 <body data-spy="scroll" data-offset="80">

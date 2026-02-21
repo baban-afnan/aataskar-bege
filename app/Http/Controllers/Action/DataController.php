@@ -53,7 +53,7 @@ class DataController extends Controller
 
         try {
             // Fetch services that end with 'data' or are relevant data services
-            $servicename = DB::table('data_variations')
+            $data_variation = DB::table('data_variations')
                 ->select(['service_id', 'service_name'])
                 ->where('status', 'enabled')
                 ->where(function ($query) {
@@ -73,7 +73,7 @@ class DataController extends Controller
             $priceList5 = DB::table('data_variations')->where('service_id', 'smile-direct')->paginate(10, ['*'], 'smile_page');
             $priceList6 = DB::table('data_variations')->where('service_id', 'spectranet')->paginate(10, ['*'], 'spectranet_page');
 
-            return view('utilities.buy-data', compact('user', 'wallet', 'servicename', 'priceList1', 'priceList2', 'priceList3', 'priceList4', 'priceList5', 'priceList6'));
+            return view('utilities.buy-data', compact('user', 'wallet', 'data_variation', 'priceList1', 'priceList2', 'priceList3', 'priceList4', 'priceList5', 'priceList6'));
         } catch (\Exception $e) {
             Log::error('Data page error: ' . $e->getMessage());
             return back()->with('error', 'Unable to load data services.');
@@ -179,85 +179,76 @@ class DataController extends Controller
         // You can re-enable discount logic here if needed, similar to AirtimeController adjustments if any
         $payableAmount = $amount; 
 
-        // 4. Check Wallet Balance
-        $wallet = Wallet::where('user_id', $user->id)->first();
-        if (!$wallet || $wallet->balance < $payableAmount) {
-            return redirect()->back()->with('error', 'Insufficient wallet balance! You need ₦' . number_format($payableAmount, 2));
-        }
-
-        // 5. Call Arewa Smart Data API
+        // Charge-first strategy with DB transaction
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->getApiToken(),
-                'Content-Type'  => 'application/json',
-                'Accept'        => 'application/json',
-            ])->post($this->getApiBaseUrl() . '/data/purchase', [
-                'network'    => $networkKey,  // mtn-data, airtel-data, etc.
-                'mobileno'   => $mobile,
-                'bundle'     => $request->bundle,
-                'request_id' => $requestId,
-            ]);
+            return DB::transaction(function () use ($user, $payableAmount, $networkKey, $mobile, $requestId, $variation, $amount, $description, $request) {
+                // Lock wallet for update to prevent race conditions
+                $wallet = Wallet::where('user_id', $user->id)->lockForUpdate()->first();
+                
+                if (!$wallet || $wallet->balance < $payableAmount) {
+                    throw new \Exception('Insufficient wallet balance! You need ₦' . number_format($payableAmount, 2));
+                }
+
+                // 1. Deduct funds immediately
+                $wallet->decrement('balance', $payableAmount);
+
+                try {
+                    // 2. Call Arewa Smart Data API
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $this->getApiToken(),
+                        'Content-Type'  => 'application/json',
+                        'Accept'        => 'application/json',
+                    ])->post($this->getApiBaseUrl() . '/data/purchase', [
+                        'network'    => $networkKey,
+                        'mobileno'   => $mobile,
+                        'bundle'     => $request->bundle,
+                        'request_id' => $requestId,
+                    ]);
+
+                    $data = $response->json();
+                    Log::info('Arewa Smart Data API Response', ['response' => $data]);
+
+                    if ($response->successful() && isset($data['status']) && $data['status'] === 'success') {
+                        // Success: Create Transaction Record and commit
+                        $apiData = $data['data'] ?? [];
+                        $transactionRef = $apiData['transaction_ref'] ?? $requestId;
+
+                        Transaction::create([
+                            'referenceId'         => $transactionRef,
+                            'user_id'             => $user->id,
+                            'amount'              => $payableAmount,
+                            'service_type'        => 'data',
+                            'service_description' => "Data purchase of {$description} for {$mobile}",
+                            'type'                => 'debit',
+                            'status'              => 'Approved',
+                            'gateway'             => 'arewa_smart',
+                        ]);
+
+                        return redirect()->route('user.thankyou')->with([
+                            'success'         => 'Data purchase successful!',
+                            'transaction_ref' => $transactionRef,
+                            'request_id'      => $requestId,
+                            'mobile'          => $mobile,
+                            'network'         => ucfirst(str_replace('-data', '', $networkKey)),
+                            'amount'          => $amount,
+                            'paid'            => $payableAmount,
+                            'type'            => 'data'
+                        ]);
+                    } else {
+                        // API Failed: Rollback (via exception)
+                        $errorMessage = $data['message'] ?? 'Data purchase failed. Please try again.';
+                        throw new \Exception($errorMessage);
+                    }
+
+                } catch (\Exception $e) {
+                    // API Exception: Rollback (is handled by the outer closure throwing)
+                    Log::error('Arewa Smart Data API error: ' . $e->getMessage());
+                    throw $e;
+                }
+            });
         } catch (\Exception $e) {
-            Log::error('Arewa Smart Data API Connection Error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Could not connect to data provider. Please try again later.');
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
-        // 6. Process Response
-        $data = $response->json();
-        Log::info('Arewa Smart Data API Response', ['response' => $data]);
-
-        $isSuccessful = false;
-
-        if ($response->successful() && isset($data['status']) && $data['status'] === 'success') {
-            $isSuccessful = true;
-        }
-
-        if ($isSuccessful) {
-            // Deduct Wallet (Payable Amount)
-            $oldBalance = $wallet->balance;
-            $wallet->decrement('balance', $payableAmount);
-            $newBalance = $wallet->balance;
-
-            // Extract API response data
-            $apiData = $data['data'] ?? [];
-            $transactionRef = $apiData['transaction_ref'] ?? $requestId;
-
-            // Create Transaction Record
-            Transaction::create([
-                'referenceId' => $transactionRef,
-                'user_id'         => $user->id,
-                'amount'          => $payableAmount,
-                'service_type'    => 'data',
-                'service_description'     => "Data purchase of {$description} for {$mobile}",
-                'type'            => 'debit',
-                'status'          => 'approved',
-                'gateway'         => 'arewa_smart',
-                'metadata'        => json_encode([
-                    'phone'        => $mobile,
-                    'network'      => $networkKey,
-                    'bundle'       => $request->bundle,
-                    'original_amt' => $amount,
-                    'api_response' => $data,
-                ]),
-                'performed_by' => $user->first_name . ' ' . $user->last_name,
-                'approved_by'  => $user->id,
-            ]);
-
-            return redirect()->route('user.thankyou')->with([
-                'success'         => 'Data purchase successful!',
-                'transaction_ref' => $transactionRef,
-                'request_id'      => $requestId,
-                'mobile'          => $mobile,
-                'network'         => ucfirst(str_replace('-data', '', $networkKey)),
-                'amount'          => $amount,
-                'paid'            => $payableAmount,
-                'type'            => 'data'
-            ]);
-        }
-
-        Log::error('Arewa Smart Data API Response Error', ['response' => $data]);
-        $errorMessage = $data['message'] ?? 'Data purchase failed. Please try again.';
-        return redirect()->back()->with('error', $errorMessage);
     }
 
     /**
