@@ -87,7 +87,7 @@ class AirtimeController extends Controller
         // 1. Find the Airtime Service
         $service = Services1::where('name', 'Airtime')->first();
         if (!$service) {
-             $service = Services1::firstOrCreate(['name' => 'Airtime'], ['status' => 'active']);
+             return back()->with('error', 'Airtime service not available.');
         }
 
         // 2. Find the specific Network Field (e.g., MTN)
@@ -97,21 +97,12 @@ class AirtimeController extends Controller
                   ->orWhere('field_code', 'LIKE', "%{$networkKey}%");
             })->first();
 
-        // 3. Calculate Discount/Commission (if any)
-        $discountPercentage = 0;
-        if ($serviceField) {
-            $userType = $user->user_type ?? 'user';
-            
-            $servicePrice = \App\Models\ServicePrice::where('service_field_id', $serviceField->id)
-                ->where('user_type', $userType)
-                ->first();
-
-            if ($servicePrice) {
-                $discountPercentage = $servicePrice->price;
-            } else {
-                $discountPercentage = $serviceField->base_price ?? 0;
-            }
+        if (!$serviceField) {
+            return back()->with('error', 'Network service not configured.');
         }
+
+        // 3. Get Discount/Commission from DB
+        $discountPercentage = $serviceField->getPriceForUserType($user->role);
 
         $discountAmount = ($amount * $discountPercentage) / 100;
         $payableAmount = $amount - $discountAmount;

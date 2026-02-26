@@ -26,7 +26,7 @@ class SmeData extends Model
      */
     public function calculatePriceForRole($role)
     {
-        $service = Service::where('name', 'SME Data')->first();
+        $service = Services1::where('name', 'SME Data')->first();
         if (!$service) return (float)$this->amount;
 
         $networkMap = [
@@ -37,17 +37,13 @@ class SmeData extends Model
         ];
 
         $fieldCode = $networkMap[strtoupper($this->network)] ?? null;
+        if (!$fieldCode) return (float)$this->amount;
+
         $field = $service->fields()->where('field_code', $fieldCode)->first();
+        if (!$field) return (float)$this->amount;
         
-        $fee = $field ? (float)$field->base_price : 0;
-        $markup = 0;
+        $markup = $field->getPriceForUserType($role);
 
-        if ($field) {
-            $markup = (float)$field->prices()
-                ->where('user_type', $role)
-                ->value('price') ?? 0;
-        }
-
-        return (float)$this->amount + $fee + $markup;
+        return (float)$this->amount + (float)$markup;
     }
 }

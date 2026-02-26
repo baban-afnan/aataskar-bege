@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Verification;
 use App\Models\Transaction;
 use App\Models\Service;
+use App\Models\Services1;
 use App\Models\ServiceField;
 use App\Models\Wallet;
 use App\Repositories\NIN_PDF_Repository;
@@ -27,13 +28,8 @@ class NINverificationController extends Controller
     {
         $user = auth()->user();
 
-        // Get Verification Service using ServiceManager
-        $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'Verify NIN', 'code' => '610', 'price' => 80],
-            ['name' => 'standard slip', 'code' => '611', 'price' => 100],
-            ['name' => 'preminum slip', 'code' => '612', 'price' => 150],
-            ['name' => '1Vnin slip', 'code' => '616', 'price' => 100],
-        ]);
+        // Get Verification Service from DB
+        $service = Services1::where('name', 'Verification')->first();
         
         // Get Prices
         $verificationPrice = 0;
@@ -75,10 +71,8 @@ class NINverificationController extends Controller
             'number_nin' => 'required|string|size:11|regex:/^[0-9]{11}$/',
         ]);
 
-        // 1. Get Verification Service using ServiceManager
-        $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'Verify NIN', 'code' => '610', 'price' => 80],
-        ]);
+        // 1. Get Verification Service from DB
+        $service = Services1::where('name', 'Verification')->first();
 
         if (!$service) {
             return back()->with([
@@ -275,12 +269,8 @@ class NINverificationController extends Controller
      */
     private function chargeForSlip($user, $fieldCode)
     {
-         // 1. Get Verification Service using ServiceManager
-         $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'standard slip', 'code' => '611', 'price' => 100],
-            ['name' => 'preminum slip', 'code' => '612', 'price' => 150],
-            ['name' => '1Vnin slip', 'code' => '616', 'price' => 100],
-        ]);
+         // 1. Get Verification Service from DB
+         $service = Services1::where('name', 'Verification')->first();
 
         if (!$service) {
             throw new \Exception('Verification service not available.');

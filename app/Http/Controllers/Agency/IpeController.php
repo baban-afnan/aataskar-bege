@@ -27,7 +27,7 @@ class IpeController extends Controller
         $role = $user->role ?? 'user';
         
         foreach ($ipeFields as $field) {
-            $price = $field->prices()->where('user_type', $role)->value('price') ?? $field->base_price;
+            $price = $field->getPriceForUserType($role);
             $services->push([
                 'id' => $field->id,
                 'name' => $field->field_name,
@@ -84,7 +84,7 @@ class IpeController extends Controller
         $user = Auth::user();
         $role = $user->role ?? 'user';
         
-        $servicePrice = $serviceField->prices()->where('user_type', $role)->value('price') ?? $serviceField->base_price;
+        $servicePrice = $serviceField->getPriceForUserType($role);
 
         $wallet = Wallet::where('user_id', $user->id)->first();
 

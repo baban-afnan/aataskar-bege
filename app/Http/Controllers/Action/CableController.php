@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Models\Services1;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -158,7 +159,20 @@ class CableController extends Controller
 
         $user = Auth::user();
         $requestId = RequestIdHelper::generateRequestId();
-        $amount = $request->amount;
+        
+        // Calculate amount with potential markup from DB
+        $service = Services1::where('name', 'Cable')->first();
+        $markup = 0;
+        if ($service) {
+            $serviceField = \App\Models\ServiceField::where('service_id', $service->id)
+                ->where('field_code', $request->service_id)
+                ->first();
+            if ($serviceField) {
+                $markup = $serviceField->getPriceForUserType($user->role);
+            }
+        }
+
+        $amount = (float)$request->amount + $markup;
 
         // Charge-first strategy with DB transaction
         try {

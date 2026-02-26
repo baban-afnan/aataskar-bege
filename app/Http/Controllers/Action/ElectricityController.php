@@ -6,6 +6,7 @@ use App\Helpers\RequestIdHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Models\Wallet;
+use App\Models\Services1;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -32,49 +33,6 @@ class ElectricityController extends Controller
         $this->loginUserId = Auth::id();
     }
 
-    /**
-     * Ensure Electricity service and disco fields exist in database
-     */
-    private function ensureElectricityServiceExists()
-    {
-        // 1. Create or get Electricity service
-        $service = \App\Models\Service::firstOrCreate(
-            ['name' => 'Electricity'],
-            ['is_active' => '1']
-        );
-
-        // 2. Define disco fields with their codes
-        $discos = [
-            ['field_name' => 'Ikeja Electric', 'description' => 'ikeja-electric', 'field_code' => 'ikeja-electric'],
-            ['field_name' => 'Eko Electric', 'description' => 'eko-electric', 'field_code' => 'eko-electric'],
-            ['field_name' => 'Kano Electric', 'description' => 'kano-electric', 'field_code' => 'kano-electric'],
-            ['field_name' => 'Port Harcourt Electric', 'description' => 'portharcourt-electric', 'field_code' => 'portharcourt-electric'],
-            ['field_name' => 'Jos Electric', 'description' => 'jos-electric', 'field_code' => 'jos-electric'],
-            ['field_name' => 'Ibadan Electric', 'description' => 'ibadan-electric', 'field_code' => 'ibadan-electric'],
-            ['field_name' => 'Kaduna Electric', 'description' => 'kaduna-electric', 'field_code' => 'kaduna-electric'],
-            ['field_name' => 'Abuja Electric', 'description' => 'abuja-electric', 'field_code' => 'abuja-electric'],
-            ['field_name' => 'Enugu Electric', 'description' => 'enugu-electric', 'field_code' => 'enugu-electric'],
-            ['field_name' => 'Benin Electric', 'description' => 'benin-electric', 'field_code' => 'benin-electric'],
-            ['field_name' => 'Aba Electric', 'description' => 'aba-electric-payment', 'field_code' => 'aba-electric-payment'],
-            ['field_name' => 'Yola Electric', 'description' => 'yola-electric', 'field_code' => 'yola-electric'],
-        ];
-
-        // 3. Create service fields if they don't exist
-        foreach ($discos as $disco) {
-            \App\Models\ServiceField::firstOrCreate(
-                [
-                    'service_id' => $service->id,
-                    'description' => $disco['description']
-                ],
-                [
-                    'field_name' => $disco['field_name'],
-                    'field_code' => $disco['field_code'],
-                    'base_price' => 0,
-                    'is_active' => '1',
-                ]
-            );
-        }
-    }
 
     /**
      * Show Electricity Purchase Page
@@ -90,9 +48,6 @@ class ElectricityController extends Controller
             ['user_id' => $user->id],
             ['balance' => 0.00, 'status' => 'active']
         );
-
-        // Ensure Electricity service and disco fields exist
-        $this->ensureElectricityServiceExists();
 
         // Fetch Electricity purchase history from transactions
         $history = Transaction::where('user_id', $user->id)
@@ -166,9 +121,9 @@ class ElectricityController extends Controller
         $amount = $request->amount;
 
         // 1. Find the Electricity Service
-        $service = \App\Models\Service::where('name', 'Electricity')->first();
+        $service = Services1::where('name', 'Electricity')->first();
         if (!$service) {
-            $service = \App\Models\Service::firstOrCreate(['name' => 'Electricity'], ['is_active' => '1']);
+            return back()->with('error', 'Electricity service not available.');
         }
 
         // 2. Find the specific Disco Field
@@ -176,25 +131,13 @@ class ElectricityController extends Controller
             ->where('description', $request->service_id)
             ->first();
 
-        // 3. Calculate Discount/Commission (if any)
-        $discountPercentage = 0;
-        if ($serviceField) {
-            $userType = $user->user_type ?? 'user';
-            
-            $servicePrice = \App\Models\ServicePrice::where('service_field_id', $serviceField->id)
-                ->where('user_type', $userType)
-                ->first();
-
-            if ($servicePrice) {
-                $discountPercentage = $servicePrice->price;
-            } else {
-                $discountPercentage = $serviceField->base_price ?? 0;
-            }
+        if (!$serviceField) {
+            return back()->with('error', 'Disco service not configured.');
         }
 
-        $discountAmount = ($amount * $discountPercentage) / 100;
-        $discoName = strtoupper(str_replace('-', ' ', $request->service_id));
-        $payableAmount = $amount - $discountAmount;
+        // 3. Get Price/Markup from DB
+        $markup = $serviceField->getPriceForUserType($user->role);
+        $payableAmount = $amount + $markup;
 
         // Charge-first strategy with DB transaction
         try {

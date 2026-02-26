@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Verification;
 use App\Models\Transaction;
 use App\Models\Service;
+use App\Models\Services1;
 use App\Models\ServiceField;
 use App\Models\Wallet;
 use App\Repositories\NIN_PDF_Repository;
@@ -27,15 +28,8 @@ class NINDemoVerificationController extends Controller
     {
         $user = auth()->user();
 
-        // Get Verification Service using ServiceManager
-        // Service code V100, and slip codes V101, V102
-        $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'Demo Verification', 'code' => 'V100', 'price' => 100],
-            ['name' => 'Free Slip', 'code' => 'V101', 'price' => 0],
-            ['name' => 'Regular Slip', 'code' => 'V102', 'price' => 100],
-            ['name' => 'standard slip', 'code' => '611', 'price' => 100],
-            ['name' => 'preminum slip', 'code' => '612', 'price' => 150],
-        ]);
+        // Get Verification Service from DB
+        $service = Services1::where('name', 'Verification')->first();
         
         // Get Prices
         $demoPrice = 0;
@@ -84,10 +78,8 @@ class NINDemoVerificationController extends Controller
             'dateOfBirth' => 'required|string', 
         ]);
 
-        // 1. Get Verification Service using ServiceManager
-        $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'Demo Verification', 'code' => 'V100', 'price' => 100],
-        ]);
+        // 1. Get Verification Service from DB
+        $service = Services1::where('name', 'Verification')->first();
 
         if (!$service) {
             return back()->with([
@@ -385,12 +377,7 @@ class NINDemoVerificationController extends Controller
      */
     private function chargeForSlip($user, $fieldCode)
     {
-         $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'Free Slip', 'code' => 'V101', 'price' => 0],
-            ['name' => 'Regular Slip', 'code' => 'V102', 'price' => 100],
-            ['name' => 'standard slip', 'code' => '611', 'price' => 100],
-            ['name' => 'preminum slip', 'code' => '612', 'price' => 150],
-        ]);
+         $service = Services1::where('name', 'Verification')->first();
 
         if (!$service) {
             throw new \Exception('Verification service not available.');

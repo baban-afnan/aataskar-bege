@@ -108,7 +108,7 @@ class SmeDataController extends Controller
         }
 
         $user = Auth::user();
-        $finalPrice = $plan->calculatePriceForRole($user->user_type ?? 'user');
+        $finalPrice = $plan->calculatePriceForRole($user->role);
 
         return response()->json(number_format((float)$finalPrice, 2));
     }
@@ -134,7 +134,7 @@ class SmeDataController extends Controller
             return back()->with('error', 'Invalid data plan selected.');
         }
 
-        $payableAmount = $plan->calculatePriceForRole($user->user_type ?? 'user');
+        $payableAmount = $plan->calculatePriceForRole($user->role);
         $description = "{$plan->size} {$plan->plan_type} for {$mobile} ({$plan->network})";
 
         $requestId = RequestIdHelper::generateRequestId();

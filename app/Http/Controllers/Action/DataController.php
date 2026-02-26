@@ -172,12 +172,25 @@ class DataController extends Controller
         // 1. Find the Data Service
         $service = Services1::where('name', 'Data')->first();
         if (!$service) {
-            $service = Services1::firstOrCreate(['name' => 'Data'], ['status' => 'active']);
+             return back()->with('error', 'Data service not available.');
         }
 
-        // Calculate Payable Amount (Discount logic simplified for now as per instructions)
-        // You can re-enable discount logic here if needed, similar to AirtimeController adjustments if any
-        $payableAmount = $amount; 
+        // 2. Find the Specific Network Field
+        $networkName = str_replace('-data', '', $request->network);
+        $serviceField = \App\Models\ServiceField::where('service_id', $service->id)
+            ->where(function($q) use ($networkName) {
+                $q->where('field_name', 'LIKE', "%{$networkName}%")
+                  ->orWhere('field_code', 'LIKE', "%{$networkName}%");
+            })->first();
+
+        // 3. Get Discount from DB
+        $discountPercentage = 0;
+        if ($serviceField) {
+            $discountPercentage = $serviceField->getPriceForUserType($user->role);
+        }
+
+        $discountAmount = ($amount * $discountPercentage) / 100;
+        $payableAmount = $amount - $discountAmount;
 
         // Charge-first strategy with DB transaction
         try {

@@ -108,15 +108,11 @@ class BvnModificationController extends Controller
         $serviceField = ServiceField::findOrFail($validated['service_field']);
 
         // Calculate prices
-        $modificationFee = $serviceField->prices()
-            ->where('user_type', $role)
-            ->value('price') ?? $serviceField->base_price;
+        $modificationFee = $serviceField->getPriceForUserType($role);
 
         $affidavitField = ServiceField::where('field_code', '900')->firstOrFail();
 
-        $affidavitFee = $affidavitField->prices()
-            ->where('user_type', $role)
-            ->value('price') ?? $affidavitField->base_price;
+        $affidavitFee = $affidavitField->getPriceForUserType($role);
 
         $affidavitUploaded = $request->hasFile('affidavit_file');
         $chargeAffidavit = !$affidavitUploaded;
@@ -276,7 +272,7 @@ class BvnModificationController extends Controller
         }
 
         $mappedFields = $fields->map(function ($field) use ($role) {
-            $price = $field->prices()->where('user_type', $role)->value('price') ?? $field->base_price;
+            $price = $field->getPriceForUserType($role);
             return [
                 'id' => $field->id,
                 'field_name' => $field->field_name,

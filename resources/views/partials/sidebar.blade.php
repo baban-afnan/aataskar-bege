@@ -145,6 +145,11 @@
                         href="{{ route('user.modification') }}">
                         <i class="mdi mdi-account-edit-outline menu-icon"></i> BVN Modification
                     </a>
+
+                      <a class="nav-link {{ Route::is('user.bvn-crm') ? 'active' : '' }}"
+                        href="{{ route('user.bvn-crm') }}">
+                        <i class="mdi mdi-account-edit-outline menu-icon"></i> BVN CRM
+                    </a>
                 </li>
             </ul>
         </li>

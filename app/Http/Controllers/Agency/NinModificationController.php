@@ -134,14 +134,6 @@ class NinModificationController extends Controller
 
         // Wallet check
         $wallet = Wallet::where('user_id', $user->id)->firstOrFail();
-
-        if ($wallet->status !== 'active') {
-            return back()->with([
-                'status' => 'error',
-                'message' => 'Your wallet is not active. Please contact support.'
-            ])->withInput();
-        }
-
         if ($wallet->balance < $servicePrice) {
             return back()->with([
                 'status' => 'error',

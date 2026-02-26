@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-
+use App\Models\Services1;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -140,16 +140,19 @@ class EducationalController extends Controller
             return redirect()->route('login')->with('error', 'Please log in first.');
         }
 
-        $requestId = RequestIdHelper::generateRequestId();
-
-        // Get the selected variation details
-        $variation = DB::table('data_variations')->where('variation_code', $request->type)->first();
-
-        if (!$variation) {
-            return back()->with('error', 'Invalid educational pin type selected.');
+        // Calculate Fee with potential markup from DB
+        $service = Services1::where('name', 'Educational')->first();
+        $markup = 0;
+        if ($service) {
+            $serviceField = \App\Models\ServiceField::where('service_id', $service->id)
+                ->where('field_code', $request->service)
+                ->first();
+            if ($serviceField) {
+                $markup = $serviceField->getPriceForUserType($user->role);
+            }
         }
 
-        $fee = $variation->variation_amount;
+        $fee = (float)$variation->variation_amount + $markup;
         $description = $variation->name ?? 'Educational Pin';
 
         // Charge-first strategy with DB transaction
@@ -312,19 +315,18 @@ class EducationalController extends Controller
                     // We look up the 'data_variations' table using this code.
                     // If not found, we might default to a known price or error.
                     
-                    $variationCode = $request->service; // 'jamb' or 'jamb-de'
-                    
-                    // Try to find by variation_code directly
-                    $variation = DB::table('data_variations')->where('variation_code', $variationCode)->first();
-                    
-                    // If not found, try to find by service_id 'jamb' and name like... (fallback)
-                    if (!$variation) {
-                         // Fallback: if user sent 'jamb', look for 'utme' maybe? 
-                         // For now, let's assume the DB is seeded with 'jamb' and 'jamb-de' as variation_codes.
-                         // If not, we return 0 and user can't buy.
+                    $service = Services1::where('name', 'Educational')->first();
+                    $markup = 0;
+                    if ($service) {
+                        $serviceField = \App\Models\ServiceField::where('service_id', $service->id)
+                            ->where('field_code', $variationCode)
+                            ->first();
+                        if ($serviceField) {
+                            $markup = $serviceField->getPriceForUserType($user->role);
+                        }
                     }
 
-                    $amount = $variation ? $variation->variation_amount : 0;
+                    $amount = $variation ? ((float)$variation->variation_amount + $markup) : 0;
 
                     return response()->json([
                         'success' => true, 
@@ -353,16 +355,18 @@ class EducationalController extends Controller
             'mobileno'   => 'required|numeric|digits:11',
         ]);
 
-        $user = Auth::user();
-        $requestId = RequestIdHelper::generateRequestId();
-
-        // Get Price
-        $variation = DB::table('data_variations')->where('variation_code', $request->service)->first();
-        if (!$variation) {
-            return back()->with('error', 'Invalid JAMB service selected.');
+        $service = Services1::where('name', 'Educational')->first();
+        $markup = 0;
+        if ($service) {
+            $serviceField = \App\Models\ServiceField::where('service_id', $service->id)
+                ->where('field_code', $request->service)
+                ->first();
+            if ($serviceField) {
+                $markup = $serviceField->getPriceForUserType($user->role);
+            }
         }
 
-        $fee = $variation->variation_amount;
+        $fee = (float)$variation->variation_amount + $markup;
         $description = $variation->name ?? 'JAMB PIN';
 
         // Charge-first strategy with DB transaction

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Verification;
 use App\Models\Transaction;
 use App\Models\Service;
+use App\Models\Services1;
 use App\Models\ServiceField;
 use App\Models\Wallet;
 use App\Repositories\NIN_PDF_Repository;
@@ -27,13 +28,8 @@ class NINPhoneVerificationController extends Controller
     {
         $user = auth()->user();
 
-        // Get Verification Service using ServiceManager
-        $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'Phone NIN Verification', 'code' => 'V105', 'price' => 100],
-            ['name' => 'Regular Slip', 'code' => 'V102', 'price' => 100],
-            ['name' => 'standard slip', 'code' => '611', 'price' => 100],
-            ['name' => 'preminum slip', 'code' => '612', 'price' => 150],
-        ]);
+        // Get Verification Service from DB
+        $service = Services1::where('name', 'Verification')->first();
         
         // Get Prices
         $phonePrice = 0;
@@ -75,10 +71,8 @@ class NINPhoneVerificationController extends Controller
             'phone_number' => 'required|string|size:11|regex:/^[0-9]{11}$/',
         ]);
 
-        // 1. Get Verification Service using ServiceManager
-        $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'Phone NIN Verification', 'code' => 'V105', 'price' => 100],
-        ]);
+        // 1. Get Verification Service from DB
+        $service = Services1::where('name', 'Verification')->first();
 
         if (!$service) {
             return back()->with([
@@ -377,10 +371,7 @@ class NINPhoneVerificationController extends Controller
      */
     private function chargeForSlip($user, $fieldCode)
     {
-         $service = ServiceManager::getServiceWithFields('Verification', [
-            ['name' => 'standard slip', 'code' => '611', 'price' => 100],
-            ['name' => 'preminum slip', 'code' => '612', 'price' => 150],
-        ]);
+         $service = Services1::where('name', 'Verification')->first();
 
         if (!$service) {
             throw new \Exception('Verification service not available.');
