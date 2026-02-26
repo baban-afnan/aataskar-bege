@@ -314,6 +314,34 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            const crmSelect = document.getElementById('crm_service_field');
+            const priceDisplay = document.getElementById('crm-field-price');
+            const descDisplay = document.getElementById('crm-field-description');
+
+            if (crmSelect) {
+                crmSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        const selectedOption = this.options[this.selectedIndex];
+                        const price = parseFloat(selectedOption.dataset.price || 0);
+                        const description = selectedOption.dataset.description || '';
+
+                        priceDisplay.textContent = '₦' + price.toLocaleString('en-NG', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
+                        descDisplay.textContent = description;
+                    } else {
+                        priceDisplay.textContent = '₦0.00';
+                        descDisplay.textContent = '';
+                    }
+                });
+
+                // Trigger change event to set initial value (e.g., if there's an old value selected)
+                if (crmSelect.value) {
+                    crmSelect.dispatchEvent(new Event('change'));
+                }
+            }
+
             @if (session('status') && session('message'))
                 Swal.fire({
                     icon: "{{ session('status') === 'success' ? 'success' : 'error' }}",
