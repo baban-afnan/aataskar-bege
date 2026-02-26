@@ -37,6 +37,7 @@ class DashboardController extends Controller
         try {
             // Update user information
             $user->update([
+                'name' => $request->first_name . ' ' . $request->last_name,
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'phone_number' => $request->phone,

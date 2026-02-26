@@ -74,7 +74,7 @@
                 <li class="nav-item">
                     <a class="nav-link {{ Route::is('user.nin.phone.index') ? 'active' : '' }}"
                         href="{{ route('user.nin.phone.index') }}">
-                        <i class="mdi mdi-phone-account menu-icon"></i> NIN Phone
+                        <i class="mdi mdi-card-text-outline menu-icon"></i> NIN Phone
                     </a>
                 </li>
                 <li class="nav-item">
